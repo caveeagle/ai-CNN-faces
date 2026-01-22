@@ -9,8 +9,6 @@ MODEL_PATH = 'yolo.v8.nano-face.pt'
 
 TEST_FILE = './images/Cave-003.png'
 
-OUTPUT_SIZE = (112, 112)
-
 ################################################
 
 img = cv2.imread(TEST_FILE)
@@ -122,23 +120,43 @@ if left_eye is not None and right_eye is not None:
     if 0 <= le[0] < cw and 0 <= le[1] < ch and 0 <= re[0] < cw and 0 <= re[1] < ch:
         crop = align_crop_by_eyes(crop, le, re)
 
-# -----------------------------
-# RESIZE + BGR→RGB (ДО НОРМАЛИЗАЦИИ)
-# -----------------------------
+################################################
+################################################
+################################################
+
+OUTPUT_SIZE = (112, 112)
+
 face = cv2.resize(crop, OUTPUT_SIZE, interpolation=cv2.INTER_LINEAR)
-face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
 
-################################################
-################################################
-################################################
+CHECK = 0
+if(CHECK):
+    print("dtype:", face.dtype)
+    print("shape:", face.shape)
+    print("min:", face.min())
+    print("max:", face.max())
+    print("mean:", face.mean())
+    raise SystemExit()
 
-dbg = img.copy()
-cv2.rectangle(dbg, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-#cv2.imshow('Detected face (bbox)', dbg)
-cv2.imshow('Face crop aligned (pre-normalization)', cv2.cvtColor(face, cv2.COLOR_RGB2BGR))
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+#pip install insightface onnxruntime
+
+#import insightface
+#
+## инициализация (делается ОДИН РАЗ)
+#app = insightface.app.FaceAnalysis(
+#    name="buffalo_l",
+#    providers=["CPUExecutionProvider"]  # или CUDAExecutionProvider
+#)
+#app.prepare()
+#
+## === ВОТ ЭТА СТРОКА ДЕЛАЕТ EMBEDDING ===
+#embedding = app.models["recognition"].get(face)
+#
+#print(embedding.shape)   # (512,)
+
+
+
+
 
 ################################################
 ################################################
