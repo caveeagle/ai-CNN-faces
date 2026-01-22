@@ -1,7 +1,7 @@
 import cv2
 from ultralytics import YOLO
 
-model = YOLO('yolo.v8.nano-face-lindevs.pt')
+model = YOLO('yolo.v8.nano-face.pt')
 
 test_file = './images/Cave-002.png'
 
