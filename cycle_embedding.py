@@ -169,7 +169,7 @@ with sqlite3.connect(db) as conn:
     for filename, embedding in EMBEDDINGS:
         emb_blob = embedding.astype(np.float32).tobytes()
         cur.execute(
-            "INSERT INTO testing (file, embed) VALUES (?, ?)",
+            "INSERT INTO testing (filename, embedding) VALUES (?, ?)",
             (filename, emb_blob)
         )
     conn.commit()

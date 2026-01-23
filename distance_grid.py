@@ -1,0 +1,38 @@
+import sqlite3
+import numpy as np
+from tabulate import tabulate
+import os
+
+db = 'faces.sqlite'
+
+with sqlite3.connect(db) as conn:
+    cur = conn.cursor()
+    cur.execute("SELECT filename, embedding FROM testing")
+    data = cur.fetchall()
+
+# Готовим имена и embedding'и
+filenames = []
+embeddings = []
+for fname, emb_blob in data:
+    # Обрезаем .png (если есть)
+    name = fname[:-4] if fname.lower().endswith('.png') else fname
+    filenames.append(name)
+    embeddings.append(np.frombuffer(emb_blob, dtype=np.float32))
+
+# Строим попарную матрицу расстояний (L2)
+n = len(filenames)
+distance_matrix = np.zeros((n, n))
+for i in range(n):
+    for j in range(n):
+        distance_matrix[i, j] = np.linalg.norm(embeddings[i] - embeddings[j])
+
+# Формируем таблицу
+table = []
+for i, name_row in enumerate(filenames):
+    row = [name_row] + [f"{distance_matrix[i, j]:.3f}" for j in range(n)]
+    table.append(row)
+
+headers = [""]
+
+# Красивый вывод
+print(tabulate(table, headers, tablefmt="grid"))
