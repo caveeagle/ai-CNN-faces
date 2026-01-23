@@ -137,22 +137,34 @@ if(CHECK):
     print("mean:", face.mean())
     raise SystemExit()
 
+SHOW_FACE = 0
+if(SHOW_FACE):
 
-#pip install insightface onnxruntime
+    import cv2
+    import matplotlib.pyplot as plt
+    
+    plt.imshow(face)        # если BGR — лицо будет синеватым
+    plt.title("Raw face")
+    plt.axis("off")
+    plt.show()
+    raise SystemExit()
 
-#import insightface
-#
-## инициализация (делается ОДИН РАЗ)
-#app = insightface.app.FaceAnalysis(
-#    name="buffalo_l",
-#    providers=["CPUExecutionProvider"]  # или CUDAExecutionProvider
-#)
-#app.prepare()
-#
-## === ВОТ ЭТА СТРОКА ДЕЛАЕТ EMBEDDING ===
-#embedding = app.models["recognition"].get(face)
-#
-#print(embedding.shape)   # (512,)
+print(f'Begin embedded')
+
+import torch
+import numpy as np
+from facenet_pytorch import InceptionResnetV1
+
+model = InceptionResnetV1(pretrained='vggface2').eval()
+
+face_rgb = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
+face_tensor = torch.from_numpy(face_rgb).permute(2,0,1).unsqueeze(0).float()
+face_tensor = face_tensor / 255.0
+
+torch.set_grad_enabled(False)
+
+embedding = model(face_tensor)
+embedding = embedding.cpu().numpy()[0]
 
 
 
