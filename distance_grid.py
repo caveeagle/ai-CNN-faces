@@ -2,6 +2,10 @@ import sqlite3
 import numpy as np
 from tabulate import tabulate
 import os
+import csv
+
+###########################################################
+###########################################################
 
 db = 'faces.sqlite'
 
@@ -26,13 +30,43 @@ for i in range(n):
     for j in range(n):
         distance_matrix[i, j] = np.linalg.norm(embeddings[i] - embeddings[j])
 
-# Формируем таблицу
-table = []
-for i, name_row in enumerate(filenames):
-    row = [name_row] + [f"{distance_matrix[i, j]:.3f}" for j in range(n)]
-    table.append(row)
+########################################################################
+########################################################################
 
-headers = [""]
+SHORT_NAMES = 1
 
-# Красивый вывод
-print(tabulate(table, headers, tablefmt="grid"))
+if(SHORT_NAMES):
+    
+    filenames = [name[:2] + name[-2:] for name in filenames]
+
+TABULATE_OUTPUT = 0
+
+if(TABULATE_OUTPUT):
+
+    # Формируем таблицу
+    table = []
+    for i, name_row in enumerate(filenames):
+        row = [name_row] + [f'{distance_matrix[i, j]:.2f}' for j in range(n)]
+        table.append(row)
+    
+    headers = ['']
+
+    # Красивый вывод
+    print(tabulate(table, headers, tablefmt="grid"))
+
+
+CSV_OUTPUT = 1
+
+if(CSV_OUTPUT):
+
+    with open('distance_matrix.csv', 'w', newline='', encoding='utf-8') as f:
+        w = csv.writer(f, delimiter=';')
+        w.writerow([''] + filenames)
+        for i in range(n):
+            w.writerow([filenames[i]] + [f'{distance_matrix[i, j]:.2f}' for j in range(n)])
+        
+        
+########################################################################
+########################################################################
+
+print(f'Job well done')
