@@ -33,7 +33,7 @@ for i in range(n):
 ########################################################################
 ########################################################################
 
-SHORT_NAMES = 1
+SHORT_NAMES = 0
 
 if(SHORT_NAMES):
     
@@ -55,7 +55,7 @@ if(TABULATE_OUTPUT):
     print(tabulate(table, headers, tablefmt="grid"))
 
 
-CSV_OUTPUT = 1
+CSV_OUTPUT = 0
 
 if(CSV_OUTPUT):
 
@@ -64,6 +64,25 @@ if(CSV_OUTPUT):
         w.writerow([''] + filenames)
         for i in range(n):
             w.writerow([filenames[i]] + [f'{distance_matrix[i, j]:.2f}' for j in range(n)])
+
+
+MIN_DISTANCE_OUT = 1
+
+if(MIN_DISTANCE_OUT):
+    
+    for i in range(len(filenames)):
+        # копируем строку расстояний
+        row = distance_matrix[i].copy()
+        
+        # исключаем расстояние до самого себя
+        row[i] = np.inf
+        
+        # индекс минимального расстояния
+        j_min = np.argmin(row)
+        
+        min_dist = row[j_min]
+        
+        print(f'{filenames[i]} -> {filenames[j_min]} - {min_dist:.2f}')    
         
         
 ########################################################################
